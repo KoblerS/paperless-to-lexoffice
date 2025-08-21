@@ -20,10 +20,10 @@ Before running this service, prepare the following:
 
 - A running **paperless-ngx** instance.  
 - A **paperless-ngx API token** (the user must have the rights to view documents and edit tags).  
-- A **lexoffice API token** (Public API usage is included in all lexoffice plans ✅).  
+- A **lexoffice username and password** (API usage is included in all lexoffice plans ✅).  
 - Two tags in paperless-ngx:  
-  - **Inbox Tag** → marks incoming documents.  
-  - **Lexoffice Tag** → marks documents that should be synced.  
+  - **Inbox Tag** → marks incoming documents.
+  - **Lexoffice Tag** → marks documents that should be synced, this tag will be removed afterwards to sign successful sync.
 
 ---
 

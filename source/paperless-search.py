@@ -55,7 +55,7 @@ async def sync_paperless_to_lexoffice():
                 if response.status_code == 200:
                     print("Upload successful. Deleting file from tmp...")
                     os.remove(filepath)
-                    paperless.remove_tag(PAPERLESS_TOKEN, PAPERLESS_URL, doc_id, [INBOX_TAG_ID])
+                    paperless.remove_tag(PAPERLESS_TOKEN, PAPERLESS_URL, doc_id, [LEXOFFICE_TAG_ID])
                 else:
                     print(f"Upload not successful. Leave file in tmp. HTTP error {response.status_code}")
 
