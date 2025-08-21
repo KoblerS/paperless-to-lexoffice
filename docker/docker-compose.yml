@@ -1,0 +1,8 @@
+version: "3"
+services:
+  daemon:
+    image: ghcr.io/koblers/paperless-to-lexoffice:latest
+    container_name: paperless-to-lexoffice
+    env_file:
+      - docker-compose.env
+    restart: unless-stopped
