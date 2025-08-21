@@ -86,7 +86,7 @@ def remove_tag(access_token, base_url, document_id, tag_ids):
         if response.status_code == 200:
             document_data = response.json()
             current_tags = document_data.get('tags', [])
-            new_tags = [tag for tag in current_tags if tag not in tag_ids]
+            new_tags = [tag for tag in current_tags if tag not in map(int, tag_ids)]
             payload = json.dumps({"tags": new_tags})
             requests.patch(url, headers=headers, data=payload)
             print(f"Removed tag IDs {tag_ids} from document #{document_id}.")
