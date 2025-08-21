@@ -1,76 +1,61 @@
-import requests
-from time import sleep
 import os
+import requests
+import urllib.parse
+from time import sleep
 
-_cached_cookie = {}
+LEXOFFICE_BASE_URL = "https://app.lexware.de"
+_session = None
 
-def create_cookie(username, password):
-    global _cached_cookie
-    url = 'https://app.lexware.de/janus/janus-rest/public/login/web/v100/authenticate'
-    payload = {"username": username, "password": password}
-    response = requests.post(url, json=payload)
-    if response.status_code == 200:
-        cookies = {}
-        # Manche Antworten enthalten mehrere Cookies, daher Split auf Kommas und Semikolons
-        cookie_headers = response.headers.getlist("Set-Cookie") if hasattr(response.headers, "getlist") else [response.headers.get("Set-Cookie")]
-        for cookie_str in cookie_headers:
-            if cookie_str:
-                for part in cookie_str.split(";"):
-                    if "=" in part:
-                        key, value = part.strip().split("=", 1)
-                        cookies[key] = value
-        _cached_cookie = cookies
-        return _cached_cookie
-    print(f"Error creating cookie: {response.status_code}")
-    return None
+def get_session(username=None, password=None):
+    global _session
+    if _session is None:
+        _session = requests.Session()
+        if username and password:
+            url = urllib.parse.urljoin(
+                LEXOFFICE_BASE_URL,
+                'janus/janus-rest/public/login/web/v100/authenticate'
+            )
+            payload = {"username": username, "password": password}
+            response = _session.post(url, json=payload)
+            if response.status_code != 200:
+                print(f"Error creating session cookie: {response.status_code}")
+                _session = None
+    return _session
 
 def upload_voucher(filepath, username=None, password=None):
-    global _cached_cookie
-
     filename = os.path.basename(filepath)
     print(f"Got filename {filename} to upload")
 
-    # Header wie im funktionierenden Postman-Request
     headers = {
         'accept': '*/*',
-        'origin': 'https://app.lexware.de',
+        'origin': LEXOFFICE_BASE_URL,
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
         'x-bookkeeping-voucher-client': 'Belegliste',
     }
 
-    with open(filepath, 'rb') as f:
-        files = [
-            ('datasource', (None, 'USER_BROWSER')),
-            ('documents', (filename, f, 'application/pdf')),
-        ]
+    session = get_session(username, password)
+    url = urllib.parse.urljoin(
+        LEXOFFICE_BASE_URL,
+        'capsa/capsa-rest/v2/vouchers'
+    )
 
-        sleep(0.5)
-        response = requests.post(
-            'https://app.lexware.de/capsa/capsa-rest/v2/vouchers',
-            headers=headers,
-            files=files,
-            cookies=_cached_cookie if _cached_cookie else None
-        )
+    def post_file(session):
+        with open(filepath, 'rb') as f:
+            files = [
+                ('datasource', (None, 'USER_BROWSER')),
+                ('documents', (filename, f, 'application/pdf')),
+            ]
+            sleep(0.5)
+            return session.post(url, headers=headers, files=files)
 
-    # 401? Cookie neu erstellen
+    response = post_file(session)
+
     if response.status_code == 401 and username and password:
-        print("Unauthorized. Refreshing cookie...")
-        new_cookie = create_cookie(username, password)
-        if new_cookie:
-            print("Cookie refreshed successfully, attempting upload again...")
-            with open(filepath, 'rb') as f:
-                files = [
-                    ('datasource', (None, 'USER_BROWSER')),
-                    ('documents', (filename, f, 'application/pdf')),
-                ]
-                response = requests.post(
-                    'https://app.lexware.de/capsa/capsa-rest/v2/vouchers',
-                    headers=headers,
-                    files=files,
-                    cookies=new_cookie
-                )
-        else:
-            print("Failed to refresh cookie.")
+        print("Unauthorized. Refreshing session...")
+        global _session
+        _session = None
+        session = get_session(username, password)
+        response = post_file(session)
 
     if response.status_code == 200:
         print(f"Document uploaded successfully, has lexoffice UUID {response.json().get('id')}")
