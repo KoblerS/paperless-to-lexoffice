@@ -88,14 +88,14 @@ services:
 
 These are the available parameters set as environment variables:
 
-| Parameter                   | Description                                                                                               | Default | Required |
-| --------------------------- | --------------------------------------------------------------------------------------------------------- | ------- | -------- |
-| `PAPERLESS_TOKEN`           | Enter your paperless-ngx token here                                                                       |         | x        |
-| `PAPERLESS_URL`             | Change this to your paperless-ngx server URL                                                              |         | x        |
-| `INBOX_TAG_ID`              | Change this to your inbox Tag ID, this is the tag that should be persistent                               |         | x        |
-| `LEXOFFICE_TAG_ID`          | Change this to your lexoffice Tag ID, this is the tag that gets removed after successfull synchronisation |         | x        |
-| `LEXOFFICE_USERNAME`        | Enter your lexoffice username here                                                                        |         | x        |
-| `LEXOFFICE_PASSWORD`        | Enter your lexoffice password here                                                                        |         | x        |
-| `POLLING_INTERVAL`          | How often should the sync job check for new documents (in seconds)                                        | `60`    | o        |
-| `PAPERLESS_ADD_VOUCHER_URL` | Specifies if the voucher preview URL should be set as custom field                                        | `true`  | o        |
-| `DEFAULT_TIMEOUT`           | Timeout until when requestss to APIs will timeout (in seconds)                                            | `10`    | o        |
+| Parameter                     | Description                                                                                               | Default | Required |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- | ------- | -------- |
+| `PAPERLESS_TOKEN`             | Enter your paperless-ngx token here                                                                       |         | x        |
+| `PAPERLESS_URL`               | Change this to your paperless-ngx server URL                                                              |         | x        |
+| `INBOX_TAG_ID`                | Change this to your inbox Tag ID, this is the tag that should be persistent                               |         | x        |
+| `LEXOFFICE_TAG_ID`            | Change this to your lexoffice Tag ID, this is the tag that gets removed after successfull synchronisation |         | x        |
+| `LEXOFFICE_USERNAME`          | Enter your lexoffice username here                                                                        |         | x        |
+| `LEXOFFICE_PASSWORD`          | Enter your lexoffice password here                                                                        |         | x        |
+| `POLLING_INTERVAL`            | How often should the sync job check for new documents (in seconds)                                        | `60`    | o        |
+| `CUSTOM_FIELD_ID_PREVIEW_URL` | Specifies the custom field id to set the voucher preview URL                                              |         | o        |
+| `DEFAULT_TIMEOUT`             | Timeout until when requestss to APIs will timeout (in seconds)                                            | `10`    | o        |

@@ -11,12 +11,12 @@ INBOX_TAG_ID = os.getenv('INBOX_TAG_ID')
 LEXOFFICE_TAG_ID = os.getenv('LEXOFFICE_TAG_ID')
 LEXOFFICE_USERNAME = os.getenv('LEXOFFICE_USERNAME')
 LEXOFFICE_PASSWORD = os.getenv('LEXOFFICE_PASSWORD')
-PAPERLESS_ADD_VOUCHER_URL = bool(os.getenv('PAPERLESS_ADD_VOUCHER_URL', 'True'))
+CUSTOM_FIELD_ID_PREVIEW_URL = os.getenv('CUSTOM_FIELD_ID_PREVIEW_URL')
 
 TMP_DIR = "tmp"
 LOCK_FILE = 'script.lock'
 
-LEXOFFICE_VOUCHER_PREVIEW_URL = "https://app.lexware.de/vouchers#!/VoucherList/Invoice/"
+LEXOFFICE_VOUCHER_PREVIEW_URL = "https://app.lexware.de/vouchers#!/VoucherList//PurchaseInvoice/"
 
 def create_lock():
     with open(LOCK_FILE, 'w') as f:
@@ -60,7 +60,10 @@ async def sync_paperless_to_lexoffice():
                 if lexoffice_document_uuid:
                     print("[Sync] Upload successful. Deleting file from tmp...")
                     paperless.remove_tag(PAPERLESS_TOKEN, PAPERLESS_URL, doc_id, [LEXOFFICE_TAG_ID])
-                    paperless.set_custom_field(PAPERLESS_TOKEN, PAPERLESS_URL, doc_id, "lexoffice_document_uuid", f"{LEXOFFICE_VOUCHER_PREVIEW_URL}{lexoffice_document_uuid}")
+
+                    if CUSTOM_FIELD_ID_PREVIEW_URL:
+                        print("[Sync] Adding voucher preview URL as custom field...")
+                        paperless.set_custom_field(PAPERLESS_TOKEN, PAPERLESS_URL, doc_id, CUSTOM_FIELD_ID_PREVIEW_URL, f"{LEXOFFICE_VOUCHER_PREVIEW_URL}{lexoffice_document_uuid}?filter=unchecked&sort=sortByLastModifiedDate&sortDirection=desc")
                 else:
                     print(f"[Sync] Upload not successful. Deleting file from tmp as it gets downloaded in the next cycle.")
 
