@@ -17,14 +17,17 @@ def get_session(username=None, password=None):
             )
             payload = {"username": username, "password": password}
             response = _session.post(url, json=payload)
-            if response.status_code != 200:
-                print(f"Error creating session cookie: {response.status_code}")
+            if response.status_code == 401:
+                print("[Lexoffice] Auth failed, please check your credentials, they might be wrong or expired.")
+                _session = None
+            elif response.status_code != 200:
+                print(f"[Lexoffice] Error creating session cookie: {response.status_code}")
                 _session = None
     return _session
 
 def upload_voucher(filepath, username=None, password=None):
     filename = os.path.basename(filepath)
-    print(f"Got filename {filename} to upload")
+    print(f"[Lexoffice] Received filename {filename} to upload")
 
     headers = {
         'accept': '*/*',
@@ -51,15 +54,17 @@ def upload_voucher(filepath, username=None, password=None):
     response = post_file(session)
 
     if response.status_code == 401 and username and password:
-        print("Unauthorized. Refreshing session...")
+        print("[Lexoffice] Returned unauthorized, attempting to refresh session...")
         global _session
         _session = None
         session = get_session(username, password)
         response = post_file(session)
 
-    if response.status_code == 200:
-        print(f"Document uploaded successfully, has lexoffice UUID {response.json().get('id')}")
-    else:
-        print("Request failed with status code:", response.status_code)
+    lexoffice_document_uuid = response.json().get('id', None)
 
-    return response
+    if response.status_code == 200:
+        print(f"[Lexoffice] Document uploaded successfully, has lexoffice UUID {lexoffice_document_uuid}")
+    else:
+        print(f"[Lexoffice] Request failed with status code: {response.status_code}")
+
+    return lexoffice_document_uuid

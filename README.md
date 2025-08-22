@@ -10,6 +10,7 @@ The sync is **unidirectional** (paperless-ngx ➝ lexoffice).
 - Tag-based workflow:  
   - Documents in the **inbox tag** are monitored.  
   - Adding the **lexoffice tag** triggers synchronization.  
+- Add voucher preview URL as custom field.
 - Runs in Docker for easy setup.  
 
 ---
@@ -54,8 +55,8 @@ Interval in seconds to check for new documents.
 ```ini
 PAPERLESS_TOKEN="TOKEN"                 # Your paperless-ngx API token
 PAPERLESS_URL="http://192.168.0.5:8000" # URL of your paperless-ngx instance
-INBOX_TAG_ID=1                          # Tag ID used for the inbox
-LEXOFFICE_TAG_ID=42                     # Tag ID for documents to sync with lexoffice
+INBOX_TAG_ID=1                          # This is the id to your inbox Tag, this tag stays persistent
+LEXOFFICE_TAG_ID=42                     # This is the id to your lexoffice Tag, this tag will be removed after successful sync
 ```
 
 ### Lexoffice settings
@@ -77,8 +78,24 @@ LEXOFFICE_PASSWORD="ilovecookies"       # Your lexoffice password
 version: "3.8"
 services:
   paperless-to-lexoffice:
-    image: your-image-name:latest
+    image: ghcr.io/koblers/paperless-to-lexoffice:latest
     env_file:
       - docker-compose.env
     restart: unless-stopped
-````
+```
+
+## 🎛️ Available parameters
+
+These are the available parameters set as environment variables:
+
+| Parameter                   | Description                                                                                               | Default | Required |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- | ------- | -------- |
+| `PAPERLESS_TOKEN`           | Enter your paperless-ngx token here                                                                       |         | x        |
+| `PAPERLESS_URL`             | Change this to your paperless-ngx server URL                                                              |         | x        |
+| `INBOX_TAG_ID`              | Change this to your inbox Tag ID, this is the tag that should be persistent                               |         | x        |
+| `LEXOFFICE_TAG_ID`          | Change this to your lexoffice Tag ID, this is the tag that gets removed after successfull synchronisation |         | x        |
+| `LEXOFFICE_USERNAME`        | Enter your lexoffice username here                                                                        |         | x        |
+| `LEXOFFICE_PASSWORD`        | Enter your lexoffice password here                                                                        |         | x        |
+| `POLLING_INTERVAL`          | How often should the sync job check for new documents (in seconds)                                        | `60`    | o        |
+| `PAPERLESS_ADD_VOUCHER_URL` | Specifies if the voucher preview URL should be set as custom field                                        | `true`  | o        |
+| `DEFAULT_TIMEOUT`           | Timeout until when requestss to APIs will timeout (in seconds)                                            | `10`    | o        |
