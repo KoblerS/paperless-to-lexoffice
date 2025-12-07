@@ -257,7 +257,10 @@ def get_session(username=None, password=None):
                 print("  2. Invalid credentials")
                 print("[Lexoffice] Install dependencies: pip install playwright && playwright install chromium")
                 _session = None
-            elif response.status_code != 200 and response.status_code != 202:
+            elif response.status_code == 200 or response.status_code == 202:
+                # Success - session cookies should be set
+                print(f"[Lexoffice] Session created successfully (status {response.status_code})")
+            else:
                 print(f"[Lexoffice] Error creating session cookie: {response.status_code}")
                 print(f"[Lexoffice] Response: {response.text[:200]}")
                 _session = None
