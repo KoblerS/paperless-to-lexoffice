@@ -66,10 +66,22 @@ LEXOFFICE_USERNAME="adalovelace"        # Your lexoffice username
 LEXOFFICE_PASSWORD="ilovecookies"       # Your lexoffice password
 ```
 
+## 🛡️ AWS WAF Challenge Support
+
+Lexoffice recently implemented AWS WAF (Web Application Firewall) protection. This integration automatically handles AWS WAF challenges using:
+
+- **Automatic Detection**: The tool detects WAF challenges and solves them automatically
+- **Selenium-based Bypass**: Uses undetected-chromedriver to solve challenges in a headless browser
+- **Cookie Extraction**: Extracts authentication cookies from the browser session for API requests
+- **Graceful Fallback**: Falls back to traditional login if WAF is not present
+
+The WAF solver requires Chrome/Chromium to be installed on your system. In Docker environments, this is handled automatically by the container.
+
 ## ⚠️ Limitations
 
 - This tool is still in an early development stage.
 - It has mainly been tested in personal document management setups.
+- AWS WAF bypass requires Chrome/Chromium browser (included in Docker image)
 - Feedback, bug reports, and contributions are very welcome!
 
 ## 📄 Example docker-compose.yml
